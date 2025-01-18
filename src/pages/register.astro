@@ -1,0 +1,32 @@
+---
+import Card from "../components/Card.astro";
+import Layout from "../layouts/Layout.astro";
+const { cookies, redirect } = Astro;
+
+const accessToken = cookies.get("sb-access-token");
+const refreshToken = cookies.get("sb-refresh-token");
+let isLoggedIn = false;
+if (accessToken && refreshToken) {
+    isLoggedIn = true;
+}
+---
+
+<Layout title="Register" class="container">
+  <main class="container-fluid">
+    <Card name="register-native">
+      <h1 style="text-align: center;">Register { isLoggedIn ? ` uselessly..`: ""}</h1>
+
+      <p style="text-align: center;">Already have an account? <a href="/signin">Sign in</a></p>
+      <form action="/api/auth/register" method="post">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" />
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" />
+        <button type="submit">Register</button>
+      </form>
+    </Card>
+  </main>
+</Layout>
+
+<style>
+</style>

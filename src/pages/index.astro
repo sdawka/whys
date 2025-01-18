@@ -1,11 +1,48 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import CardLink from '../components/CardLink.astro';
+import Card from '../components/Card.astro';
+const { cookies, redirect } = Astro;
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const accessToken = cookies.get("sb-access-token");
+const refreshToken = cookies.get("sb-refresh-token");
+let isLoggedIn = false;
+if (accessToken && refreshToken) {
+    isLoggedIn = true;
+}
+
 ---
 
 <Layout>
-	<Welcome />
+	<main class="main-container">
+		{isLoggedIn ? (
+			<div class="container">
+					<CardLink href="/start" title="New" body="A brand new start" />
+					<CardLink href="/remember" title="Remember" body="Revisit your Whys"/>
+			</div>
+		) : (
+			<CardLink href="/signin" title="Sign in" body="Sign in to your account" />
+		)}
+	</main>
 </Layout>
+
+<style>
+	.main-container {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		min-height: 100vh;
+		padding: 1rem;
+	}
+	.container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 100%;
+		max-width: 400px;
+		gap: 1rem;
+	}
+	.container > * {
+		width: 100%;
+	}
+</style>

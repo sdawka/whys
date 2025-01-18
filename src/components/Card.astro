@@ -1,0 +1,13 @@
+---
+const { name } = Astro.props;
+---
+<div id=`card-${name}` class="container">
+      <slot />  <!-- children will go here -->
+</div>
+
+<style>
+    div {
+        width: fit-content;
+        margin: auto;
+    }
+</style>
