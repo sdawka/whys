@@ -38,10 +38,53 @@ const { question, answerInput } = Astro.props;
         flex-direction: column;
         gap: 2rem;
         padding: 2rem;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 1rem;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        background-color: rgb(var(--card-bg));
+        background-image: linear-gradient(
+            45deg,
+            rgba(var(--card-border), 0.5),
+            rgba(var(--card-border), 0.2)
+        );
+        background-size: 400%;
+        border-radius: 7px;
+        background-position: 100%;
+        transition: all 0.3s ease;
+        box-shadow: 
+            inset 0 0 0 1px rgba(var(--card-border), 0.3),
+            0 2px 8px rgba(var(--glow-color), 0.05);
+        position: relative;
+        overflow: hidden;
+        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    form::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 200%;
+        height: 100%;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.05),
+            transparent
+        );
+        transition: 0.5s;
+    }
+
+    form:hover::before {
+        left: 100%;
+    }
+
+    form:hover {
+        box-shadow: 
+            inset 0 0 0 1px rgba(var(--accent-light), 0.3),
+            0 4px 16px rgba(var(--accent-light), 0.15);
+        background-image: linear-gradient(
+            45deg,
+            rgba(var(--accent-light), 0.1),
+            rgba(var(--accent-light), 0.03)
+        );
     }
 
     fieldset {
@@ -58,7 +101,7 @@ const { question, answerInput } = Astro.props;
         font-size: 2rem;
         line-height: 1.4;
         text-align: center;
-        color: var(--text-color);
+        color: var(--text-primary);
         animation: fadeIn 0.5s ease-out;
         padding: 0.5rem;
     }
@@ -68,7 +111,7 @@ const { question, answerInput } = Astro.props;
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 0.5rem;
         background: rgba(255, 255, 255, 0.05);
-        color: var(--text-color);
+        color: var(--text-primary);
         font-family: 'Inter', sans-serif;
         font-size: 1rem;
         transition: all 0.3s ease;
