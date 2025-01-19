@@ -1,0 +1,41 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CardLink from '../components/CardLink.astro';
+const { locals } = Astro;
+---
+
+<Layout>
+	<main class="main-container">
+		<h2>Oops! There was an error..</h2>
+		<p>Check the console if you can else I'm not sure what's wrong. Someone will get to it soon enough. </p>
+		{locals.isLoggedIn ? (
+			<div class="container">
+					<CardLink href="/api/auth/signout" title="Sign out" body="Turn it off and on again" />
+					<CardLink href="/" title="Go home" body="Back to the beginning"/>
+			</div>
+		) : (
+			<CardLink href="/signin" title="Sign in" body="Sign in to your account" />
+		)}
+	</main>
+</Layout>
+
+<style>
+	.main-container {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		min-height: 100vh;
+		padding: 1rem;
+	}
+	.container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 100%;
+		max-width: 400px;
+		gap: 1rem;
+	}
+	.container > * {
+		width: 100%;
+	}
+</style>

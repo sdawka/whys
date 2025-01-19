@@ -1,18 +1,48 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { actions } from 'astro:actions';
-
+import Layout from "../layouts/Layout.astro";
+import { actions } from "astro:actions";
+import CardLink from "../components/CardLink.astro";
+import Mirror from "../components/Mirror.astro";
+import { redirectToDefaultLocale } from "astro:i18n";
 const { locals } = Astro;
 if (!locals.isLoggedIn) {
-    return Astro.redirect('/signin');
+	return Astro.redirect("/signin");
 }
 
-const {data, error} = await Astro.callAction(actions.getUserWhys)
-console.log(data)
-
+const { data, error } = await Astro.callAction(actions.getUserWhys);
+let isEnoughWhys = false;
+let question, answerInput;
+if (data?.length === 5 && false) {
+	// isEnoughWhys = true;
+} else {
+	// check for empty why
+	// else
+	const {data, error} = await Astro.callAction(actions.startNewWhy);
+	if (error) {
+		console.error(error);
+		return Astro.redirect("/error");
+	}
+	question = data.question;
+	answerInput = data.answerInput;
+}
 ---
 
 <Layout>
-	<main class="main-container">
+	<main class="container-fluid">
+		{
+			isEnoughWhys ? (
+				<div class="container">
+					<h3>You have a lot of whys! (Max reached!)</h3>
+					<p>Forget one to add a new one.</p>
+					<CardLink
+						href="/remember"
+						title="Remember"
+						body="Revisit your Whys"
+					/>
+				</div>
+			) : (
+				<Mirror question={question} answerInput={answerInput} />
+			)
+		}
 	</main>
 </Layout>

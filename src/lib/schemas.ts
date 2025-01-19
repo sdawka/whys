@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'astro:schema';
 
 // Base Zod Schemas
 export const WhySchema = z.object({

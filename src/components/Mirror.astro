@@ -1,0 +1,220 @@
+---
+const { question, answerInput } = Astro.props;
+---
+
+<magic-mirror
+    data-question={question}
+    data-answer-input={JSON.stringify(answerInput)}
+>
+    <form>
+        <fieldset>
+            <label id="question"> {question} </label>
+
+            <input
+                id="answer"
+                name="answer"
+                placeholder="Say as much or as little as you want .. it's ok "
+            />
+        </fieldset>
+
+        <input type="submit" value="Submit" class="submit-btn" />
+    </form>
+</magic-mirror>
+
+<style>
+    magic-mirror {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 70vh;
+        width: 100%;
+        padding: 2rem 1rem;
+    }
+
+    form {
+        width: 100%;
+        max-width: 600px;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 1rem;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    fieldset {
+        border: none;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin: 0;
+        padding: 0;
+    }
+
+    label#question {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        line-height: 1.4;
+        text-align: center;
+        color: var(--text-color);
+        animation: fadeIn 0.5s ease-out;
+        padding: 0.5rem;
+    }
+
+    input[type="text"], input[type="radio"], input[type="checkbox"] {
+        padding: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 0.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-color);
+        font-family: 'Inter', sans-serif;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+        text-align: center;
+    }
+
+    input[type="radio"], input[type="checkbox"] {
+        width: 1.5rem;
+        height: 1.5rem;
+        margin-right: 0.5rem;
+        vertical-align: middle;
+    }
+
+    label:has(input[type="radio"]), label:has(input[type="checkbox"]) {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Inter', sans-serif;
+        font-size: 1rem;
+        padding: 0.5rem;
+        margin: 0.5rem 0;
+        border-radius: 0.5rem;
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    label:has(input[type="radio"]):hover, label:has(input[type="checkbox"]):hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    input[type="text"]:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.2);
+    }
+
+    .submit-btn {
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--background-color);
+        background: var(--accent-color);
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        align-self: center;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+        magic-mirror {
+            min-height: 60vh;
+        }
+
+        form {
+            padding: 1.5rem;
+            gap: 1.5rem;
+        }
+    }
+</style>
+
+<script>
+    function createTextInput(placeholder) {
+        const input = document.createElement("input");
+        input.setAttribute("type", "text");
+        input.setAttribute("name", "answer");
+        input.setAttribute("id", "answer");
+        input.placeholder = placeholder;
+        return input;
+    }
+
+    function createChoiceInput(type, option) {
+        const label = document.createElement("label");
+        const input = document.createElement("input");
+        input.setAttribute("type", type);
+        input.setAttribute("name", "answer");
+        input.setAttribute("value", option);
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(option));
+        return label;
+    }
+
+    function updateFormInputs(container, answerInput) {
+        const fieldset = container.querySelector("fieldset");
+        // Remove all inputs
+        const inputs = container.querySelectorAll('input[name="answer"]');
+        inputs.forEach((input) => input.remove());
+        
+        // Remove all labels except the question label
+        const labels = container.querySelectorAll('label:not(#question)');
+        labels.forEach((label) => label.remove());
+
+        if (answerInput.type === "text") {
+            fieldset?.appendChild(createTextInput(answerInput.placeholder));
+        }
+        if (["checkbox", "radio"].includes(answerInput.type)) {
+            let options = answerInput.options.append("None")
+            options.forEach((option) => {
+                fieldset?.appendChild(
+                    createChoiceInput(answerInput.type, option),
+                );
+            });
+        }
+    }
+
+    class MagicMirror extends HTMLElement {
+        connectedCallback() {
+            const question = this.dataset.question;
+            const label = this.querySelector("label#question");
+            label.textContent = question;
+            const answerInput = JSON.parse(this.dataset.answerInput);
+            updateFormInputs(this, answerInput);
+        }
+    }
+    customElements.define("magic-mirror", MagicMirror);
+
+    import { actions } from "astro:actions";
+    import { navigate } from "astro:transitions/client";
+
+    const form = document.querySelector("form");
+    form?.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const answer = formData.get('answer');
+        if (!answer) return;
+
+        const questionLabel = document.querySelector("label#question");
+        formData.append("question", questionLabel.textContent.trim());
+
+        const { data, error } = await actions.processAnswer(formData);
+        if (error) return navigate("/error");
+        if (data.isDone) return navigate("/remember");
+
+        form.reset();
+        const question = document.querySelector("label#question");
+        question.textContent = data.question;
+        updateFormInputs(document, data.answerInput);
+    });
+</script>

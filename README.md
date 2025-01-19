@@ -15,6 +15,7 @@ All commands are run from the root of the project, from a terminal:
 ```sql
 CREATE TABLE whys (
     why_id TEXT PRIMARY KEY,
+    name TEXT DEFAULT 'unnamed', 
     user_email TEXT NOT NULL,
     created_at INTEGER DEFAULT (unixepoch()),
     is_deleted INTEGER DEFAULT 0
