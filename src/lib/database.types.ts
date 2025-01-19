@@ -1,5 +1,6 @@
 export interface Why {
     why_id: string;
+    name: string;
     user_email: string;
     created_at: number;
     is_deleted: number;
