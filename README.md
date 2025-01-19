@@ -1,35 +1,3 @@
-# Astro Starter Kit: Basics
-
-```sh
-npm create astro@latest -- --template basics
-```
-
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
-
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
-
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
-
 ## 🧞 Commands
 
 All commands are run from the root of the project, from a terminal:
@@ -43,6 +11,62 @@ All commands are run from the root of the project, from a terminal:
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
 
-## 👀 Want to learn more?
+## DB 
+```sql
+CREATE TABLE whys (
+    why_id TEXT PRIMARY KEY,
+    user_email TEXT NOT NULL,
+    created_at INTEGER DEFAULT (unixepoch()),
+    is_deleted INTEGER DEFAULT 0
+);
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+CREATE TABLE qa_sessions (
+    session_id TEXT PRIMARY KEY,
+    why_id TEXT NOT NULL,
+    created_at INTEGER DEFAULT (unixepoch()),
+    FOREIGN KEY (why_id) REFERENCES whys(why_id)
+);
+
+CREATE TABLE qa_interactions (
+    interaction_id TEXT PRIMARY KEY,
+    session_id TEXT NOT NULL,
+    question TEXT NOT NULL,
+    answer TEXT NOT NULL,
+    sequence_number INTEGER NOT NULL,
+    created_at INTEGER DEFAULT (unixepoch()),
+    FOREIGN KEY (session_id) REFERENCES qa_sessions(session_id)
+);
+
+CREATE TABLE key_point_types (
+    type_id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT,
+    parent_type_id TEXT,
+    FOREIGN KEY (parent_type_id) REFERENCES key_point_types(type_id)
+);
+
+INSERT INTO key_point_types (type_id, name, description) VALUES 
+    ('purpose', 'purpose', 'Strong and practical/validated purpose'),
+    ('negative_pressure', 'negative_pressure', 'Negative pressures from non-existence'),
+    ('direction', 'direction', 'Clear direction, if not destination');
+
+CREATE TABLE key_points (
+    key_point_id TEXT PRIMARY KEY,
+    why_id TEXT NOT NULL,
+    type_id TEXT NOT NULL,
+    content TEXT NOT NULL,
+    extracted_from_interaction_id TEXT NOT NULL,
+    created_at INTEGER DEFAULT (unixepoch()),
+    FOREIGN KEY (why_id) REFERENCES whys(why_id),
+    FOREIGN KEY (type_id) REFERENCES key_point_types(type_id),
+    FOREIGN KEY (extracted_from_interaction_id) REFERENCES qa_interactions(interaction_id)
+);
+
+CREATE INDEX idx_whys_user_email ON whys(user_email);
+CREATE INDEX idx_qa_sessions_why_id ON qa_sessions(why_id);
+CREATE INDEX idx_qa_interactions_session_id ON qa_interactions(session_id);
+CREATE INDEX idx_key_points_why_id ON key_points(why_id);
+CREATE INDEX idx_key_points_type_id ON key_points(type_id);
+
+PRAGMA foreign_keys = ON;
+```

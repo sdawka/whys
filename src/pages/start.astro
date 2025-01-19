@@ -1,9 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { actions } from 'astro:actions';
+
 const { locals } = Astro;
 if (!locals.isLoggedIn) {
     return Astro.redirect('/signin');
 }
+
+const {data, error} = await Astro.callAction(actions.getUserWhys)
+console.log(data)
 
 ---
 

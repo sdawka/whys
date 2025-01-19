@@ -17,7 +17,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
                 return next();
             }
         }
-        const {data, error} = await supabase.auth.setSession({
+        const { data, error } = await supabase.auth.setSession({
             refresh_token: refreshToken.value,
             access_token: accessToken.value,
         });
@@ -29,15 +29,14 @@ export const onRequest = defineMiddleware(async (context, next) => {
                 path: "/",
             });
         } else {
-            context.cookies.set("sb-access-token", data.session.access_token)
-            context.cookies.set("sb-refresh-token", data.session.refresh_token)
+            context.cookies.set("sb-access-token", data.session.access_token);
+            context.cookies.set("sb-refresh-token", data.session.refresh_token);
             context.locals.currentUser = data.user;
             context.locals.isLoggedIn = true;
         }
     } catch (error) {
         console.error("Error setting session:", error);
-        return next("/signin")
-
+        return next("/signin");
     }
     return next();
 });
