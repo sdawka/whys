@@ -175,7 +175,7 @@ const { question, answerInput } = Astro.props;
             fieldset?.appendChild(createTextInput(answerInput.placeholder));
         }
         if (["checkbox", "radio"].includes(answerInput.type)) {
-            let options = answerInput.options.append("None")
+            let options = [...answerInput.options, "None"];
             options.forEach((option) => {
                 fieldset?.appendChild(
                     createChoiceInput(answerInput.type, option),
