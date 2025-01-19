@@ -1,20 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import CardLink from '../components/CardLink.astro';
-const { cookies, redirect } = Astro;
-
-const accessToken = cookies.get("sb-access-token");
-const refreshToken = cookies.get("sb-refresh-token");
-let isLoggedIn = false;
-if (accessToken && refreshToken) {
-    isLoggedIn = true;
-}
+const { locals } = Astro;
 
 ---
 
 <Layout>
 	<main class="main-container">
-		{isLoggedIn ? (
+		{locals.isLoggedIn ? (
 			<div class="container">
 					<CardLink href="/start" title="New" body="A brand new start" />
 					<CardLink href="/remember" title="Remember" body="Revisit your Whys"/>

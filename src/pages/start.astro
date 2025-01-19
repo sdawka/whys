@@ -1,0 +1,13 @@
+---
+import Layout from '../layouts/Layout.astro';
+const { locals } = Astro;
+if (!locals.isLoggedIn) {
+    return Astro.redirect('/signin');
+}
+
+---
+
+<Layout>
+	<main class="main-container">
+	</main>
+</Layout>
